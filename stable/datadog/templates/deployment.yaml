@@ -58,11 +58,17 @@ spec:
         - mountPath: /home/secrets
           name: secrets-volume
       {{- end }}
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+          - name: timeout
+            value: "1"
       containers:
       - name: {{ default .Chart.Name .Values.datadog.name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
-        args: ['sh','-c','cat /conf.d/89-copy-customfiles.sh; cp /conf.d/89-copy-customfiles.sh /etc/cont-init.d/89-copy-customfiles.sh; sed -i "1d" /etc/cont-init.d/89-copy-customfiles.sh; chmod +x /etc/cont-init.d/89-copy-customfiles.sh; /init']
+        args: ['sh','-c','cat /conf.d/89-copy-customfiles.sh; cp /conf.d/89-copy-customfiles.sh /etc/cont-init.d/89-copy-customfiles.sh; sed -i "1d" /etc/cont-init.d/89-copy-customfiles.sh; chmod +x /etc/cont-init.d/89-copy-customfiles.sh; exec /init']
         resources:
 {{ toYaml .Values.datadog.resources | indent 10 }}
         ports:
