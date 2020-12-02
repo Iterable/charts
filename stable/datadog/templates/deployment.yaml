@@ -58,12 +58,20 @@ spec:
         - mountPath: /home/secrets
           name: secrets-volume
       {{- end }}
+      dnsPolicy: None
       dnsConfig:
+        nameservers:
+        - 169.254.20.10
+        - 172.20.0.10
         options:
-          - name: ndots
-            value: "1"
-          - name: timeout
-            value: "1"
+        - name: ndots
+          value: "1"
+        - name: timeout
+          value: "1"
+        searches:
+        - {{ .Release.Namespace }}.svc.cluster.local
+        - svc.cluster.local
+        - cluster.local
       containers:
       - name: {{ default .Chart.Name .Values.datadog.name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -163,6 +171,11 @@ spec:
             mountPath: /checks.d
             readOnly: true
           {{- end }}
+          {{- if .Values.daemonset.useConfigMap }}
+          - name: {{ template "datadog.fullname" . }}-datadog-yaml
+            mountPath: /etc/datadog-agent/datadog.yaml
+            subPath: datadog.yaml
+          {{- end }}
 {{- if .Values.datadog.volumeMounts }}
 {{ toYaml .Values.datadog.volumeMounts | indent 10 }}
 {{- end }}
@@ -209,6 +222,11 @@ spec:
         - name: checksd
           configMap:
             name: {{ template "datadog.fullname" . }}-checksd
+        {{- end }}
+        {{- if .Values.daemonset.useConfigMap }}
+        - name: {{ template "datadog.fullname" . }}-datadog-yaml
+          configMap:
+            name: {{ template "datadog.fullname" . }}-datadog-yaml
         {{- end }}
 {{- if .Values.datadog.volumes }}
 {{ toYaml .Values.datadog.volumes | indent 8 }}
