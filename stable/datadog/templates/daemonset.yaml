@@ -54,6 +54,9 @@ spec:
       dnsConfig:
 {{ toYaml .Values.agents.dnsConfig | indent 8 }}
       {{- end }}
+      {{- if .Values.agents.dnsPolicy }}
+      dnsPolicy: {{ .Values.agents.dnsPolicy }}
+      {{- end }}
       {{- if .Values.datadog.dogstatsd.useHostPID }}
       hostPID: {{ .Values.datadog.dogstatsd.useHostPID }}
       {{- end }}

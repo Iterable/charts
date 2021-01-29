@@ -62,7 +62,10 @@ spec:
       - name: {{ default .Chart.Name .Values.datadog.name }}
         image: "{{ .Values.agents.image.repository }}:{{ .Values.agents.image.tag }}"
         imagePullPolicy: {{ .Values.agents.image.pullPolicy }}
-        args: ['sh','-c','cat /conf.d/89-copy-customfiles.sh; cp /conf.d/89-copy-customfiles.sh /etc/cont-init.d/89-copy-customfiles.sh; sed -i "1d" /etc/cont-init.d/89-copy-customfiles.sh; chmod +x /etc/cont-init.d/89-copy-customfiles.sh; /init']
+        args:
+          - 'sh'
+          - '-c'
+          - 'if [ -f /conf.d/89-copy-customfiles.sh ]; then cat /conf.d/89-copy-custom-files.sh; cp /conf.d/89-copy-customfiles.sh /etc/cont-init.d/89-copy-customfiles.sh; sed -i "1d" /etc/cont-init.d/89-copy-customfiles.sh; chmod +x /etc/cont-init.d/89-copy-customfiles.sh; fi; /init'
         resources:
 {{ toYaml .Values.datadog.resources | indent 10 }}
         ports:
