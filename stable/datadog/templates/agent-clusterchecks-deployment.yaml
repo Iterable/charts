@@ -33,6 +33,9 @@ spec:
       dnsConfig:
 {{ toYaml .Values.clusterChecksRunner.dnsConfig | indent 8 }}
       {{- end }}
+      {{- if .Values.clusterChecksRunner.dnsPolicy }}
+      dnsPolicy: {{ .Values.clusterChecksRunner.dnsPolicy }}
+      {{- end }}
       containers:
       - name: agent
         image: "{{ .Values.clusterChecksRunner.image.repository }}:{{ .Values.clusterChecksRunner.image.tag }}"
@@ -110,6 +113,9 @@ spec:
 {{ toYaml .Values.clusterChecksRunner.livenessProbe | indent 10 }}
         readinessProbe:
 {{ toYaml .Values.clusterChecksRunner.readinessProbe | indent 10 }}
+{{- if .Values.clusterChecksRunner.sidecars }}
+{{ toYaml .Values.clusterChecksRunner.sidecars | indent 6 }}
+{{- end }}
 {{- if .Values.clusterChecksRunner.volumes }}
       volumes:
 {{ toYaml .Values.clusterChecksRunner.volumes | indent 8 }}
